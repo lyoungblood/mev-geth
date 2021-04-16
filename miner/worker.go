@@ -1373,7 +1373,7 @@ func (w *worker) computeBundleGas(bundle types.MevBundle, parent *types.Block, h
 	gasFees := new(big.Int)
 	adjustedGasFees := new(big.Int)
 
-	coinbaseBalanceBefore := state.GetBalance(w.coinbase)
+	totalEth := new(big.Int)
 
 	for _, tx := range bundle.Txs {
 		receipt, err := core.ApplyTransaction(w.chainConfig, w.chain, &w.coinbase, gasPool, state, header, tx, &tempGasUsed, *w.chain.GetVMConfig())
@@ -1390,11 +1390,24 @@ func (w *worker) computeBundleGas(bundle types.MevBundle, parent *types.Block, h
 			gasPrice = bundle.MaxGas
 		}
 
+		for _, l := range receipt.Logs {
+			if len(l.Topics) > 0 && l.Topics[0] == proxyPaymentTopic {
+				event := new(ProxyFlashbotsPayment)
+
+				if err := proxyABI.UnpackIntoInterface(event, "FlashbotsPayment", l.Data); err != nil {
+					log.Error("Error parsing FlashbotsPayment event log", "err", err)
+					return simulatedBundle{}, err
+				}
+
+				if event.Coinbase == header.Coinbase {
+					totalEth.Add(totalEth, event.Amount)
+				}
+			}
+		}
+
 		gasFees.Add(gasFees, new(big.Int).Mul(big.NewInt(int64(totalGasUsed)), tx.GasPrice()))
 		adjustedGasFees.Add(adjustedGasFees, new(big.Int).Mul(big.NewInt(int64(totalGasUsed)), gasPrice))
 	}
-	coinbaseBalanceAfter := state.GetBalance(w.coinbase)
-	totalEth := new(big.Int).Sub(new(big.Int).Sub(coinbaseBalanceAfter, gasFees), coinbaseBalanceBefore)
 	totalEth.Add(totalEth, adjustedGasFees)
 
 	return simulatedBundle{
