@@ -60,6 +60,7 @@ start_node() {
           --ws.origins '*' \
           --syncmode $syncmode \
           --cache 4096 \
+          --http.api admin \
           --bootnodes enode://412df2a99d492fe1ede38a95b4914f7d4d999a7a5e502d24aa81d3711d5615f671b03999eb8607fdda53633cd049c77380843014d69146b356065fc36b79b255@172.31.36.10:30303 \
           --maxpeers $connections
         if [ $? -ne 0 ]
