@@ -43,32 +43,32 @@ Parameters:
 
   # ECS Parameters
 
-  InstanceType:
-    Type: String
-    Default: i3en.large
+#  InstanceType:
+#    Type: String
+#    Default: i3en.large
 
-  MemoryLimit:
-    Type: Number
-    Default: 6144
+#  MemoryLimit:
+#    Type: Number
+#    Default: 6144
 
-  KeyPair:
-    Type: AWS::EC2::KeyPair::KeyName
+#  KeyPair:
+#    Type: AWS::EC2::KeyPair::KeyName
 
-  SpotPrice:
-    Type: Number
-    Default: 0.0904
+#  SpotPrice:
+#    Type: Number
+#    Default: 0.0904
 
-  ClusterSize:
-    Type: Number
-    Default: 5
+#  ClusterSize:
+#    Type: Number
+#    Default: 5
 
-  Bandwidth:
-    Type: Number
-    Default: 2048
+#  Bandwidth:
+#    Type: Number
+#    Default: 2048
 
-  BandwidthCeiling:
-    Type: Number
-    Default: 4096
+#  BandwidthCeiling:
+#    Type: Number
+#    Default: 4096
 
   NodeDesiredCount:
     Type: Number
@@ -78,13 +78,17 @@ Parameters:
     Type: String
     Default: mev-geth-node
 
-  ECSAMI:
-    Type: AWS::SSM::Parameter::Value<String>
-    Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+#  ECSAMI:
+#    Type: AWS::SSM::Parameter::Value<String>
+#    Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
-  PrivateZoneName:
+  #PrivateZoneName:
+  #  Type: String
+  #  Default: geth.internal
+
+  NameSpaceId:
     Type: String
-    Default: geth.internal
+    Default: ns-aogl32fo4joomdld
 
   ServiceName:
     Type: String
@@ -102,13 +106,13 @@ Parameters:
 
   # CloudWatch Alarm Parameters
 
-  CPUAlarmThreshold:
-    Type: Number
-    Default: 80
+#  CPUAlarmThreshold:
+#    Type: Number
+#    Default: 80
 
-  MemoryAlarmThreshold:
-    Type: Number
-    Default: 80
+#  MemoryAlarmThreshold:
+#    Type: Number
+#    Default: 80
 
   # Mev-Geth Parameters
 
@@ -121,10 +125,10 @@ Parameters:
 
   SyncMode:
     Type: String
-    Default: fast
+    Default: light
     AllowedValues:
-      - full
-      - fast
+    #  - full
+    #  - fast
       - light
 
   Connections:
@@ -160,28 +164,30 @@ Metadata:
         default: "Choose which subnets the autoscaling group should be deployed to"
       VpcCIDR:
         default: "VPC CIDR Block"
-      InstanceType:
-        default: "Which instance type should we use to build the ECS cluster?"
-      MemoryLimit:
-        default: "How much memory should be reserved for each task. Set to greater than 50% of instance memory capacity."
-      KeyPair:
-        default: "Which keypair should be used to allow SSH to the nodes?"
-      ClusterSize:
-        default: "How many ECS hosts do you want to initially deploy?"
-      SpotPrice:
-        default: "The maximum spot price to pay for instances - this should normally be set to the on demand price."
-      Bandwidth:
-        default: "How much bandwidth, in kb/sec., should be allocated to Ethereum peers (upload) per EC2 instance"
-      BandwidthCeiling:
-        default: "How much bandwidth, in kb/sec., should be allocated to Ethereum peers as a ceiling (max. upload)"
+#      InstanceType:
+#        default: "Which instance type should we use to build the ECS cluster?"
+#      MemoryLimit:
+#        default: "How much memory should be reserved for each task. Set to greater than 50% of instance memory capacity."
+#      KeyPair:
+#        default: "Which keypair should be used to allow SSH to the nodes?"
+#      ClusterSize:
+#        default: "How many ECS hosts do you want to initially deploy?"
+#      SpotPrice:
+#        default: "The maximum spot price to pay for instances - this should normally be set to the on demand price."
+#      Bandwidth:
+#        default: "How much bandwidth, in kb/sec., should be allocated to Ethereum peers (upload) per EC2 instance"
+#      BandwidthCeiling:
+#        default: "How much bandwidth, in kb/sec., should be allocated to Ethereum peers as a ceiling (max. upload)"
       NodeDesiredCount:
         default: "How many ECS Tasks do you want to initially execute?"
       NodeTaskName:
         default: "The name of the node ECS Task"
-      ECSAMI:
-        default: "The ECS AMI ID populated from SSM."
-      PrivateZoneName:
-        default: "The DNS zone that should be used for service discovery records."
+#      ECSAMI:
+#        default: "The ECS AMI ID populated from SSM."
+#      PrivateZoneName:
+#        default: "The DNS zone that should be used for service discovery records."
+      NameSpaceId:
+        default: "The namespace ID that service discovery should publish records into."
       ServiceName:
         default: "The service name prefix that should be used for service discovery records."
       Network:
@@ -213,17 +219,18 @@ Metadata:
       - Label:
           default: ECS Configuration
         Parameters:
-          - InstanceType
-          - MemoryLimit
-          - KeyPair
-          - SpotPrice
-          - ClusterSize
-          - Bandwidth
-          - BandwidthCeiling
+#          - InstanceType
+#          - MemoryLimit
+#          - KeyPair
+#          - SpotPrice
+#          - ClusterSize
+#          - Bandwidth
+#          - BandwidthCeiling
           - NodeDesiredCount
           - NodeTaskName
-          - ECSAMI
-          - PrivateZoneName
+#          - ECSAMI
+#          - PrivateZoneName
+          - NameSpaceId
           - ServiceName
       - Label:
           default: Mev-Geth Configuration
@@ -239,11 +246,11 @@ Metadata:
         Parameters:
           - SNSSubscriptionEndpoint
           - SNSSubscriptionProtocol
-      - Label:
-          default: CloudWatch Alarms Configuration
-        Parameters:
-          - CPUAlarmThreshold
-          - MemoryAlarmThreshold
+#      - Label:
+#          default: CloudWatch Alarms Configuration
+#        Parameters:
+#          - CPUAlarmThreshold
+#          - MemoryAlarmThreshold
 
 # Mappings
 
@@ -270,10 +277,10 @@ Resources:
       GroupDescription: !Sub ${AWS::StackName}-sg
       VpcId: !Ref VPC
       SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: !Ref VpcCIDR
+        #- IpProtocol: tcp
+        #  FromPort: 22
+        #  ToPort: 22
+        #  CidrIp: !Ref VpcCIDR
         - IpProtocol: tcp
           FromPort: !Ref RpcPort
           ToPort: !Ref RpcPort
@@ -299,132 +306,132 @@ Resources:
           ToPort: !Ref NetPort
           CidrIpv6: ::/0
 
-  ECSAutoScalingGroup:
-    Type: AWS::AutoScaling::AutoScalingGroup
-    Properties:
-      VPCZoneIdentifier: !Ref Subnets
-      LaunchConfigurationName: !Ref ECSLaunchConfiguration
-      MinSize: !Ref ClusterSize
-      MaxSize: !Ref ClusterSize
-      DesiredCapacity: !Ref ClusterSize
-      Tags:
-        - Key: Name
-          Value: !Sub ${AWS::StackName} ECS host
-          PropagateAtLaunch: true
-    CreationPolicy:
-      ResourceSignal:
-        Timeout: PT15M
-    UpdatePolicy:
-      AutoScalingRollingUpdate:
-        MinInstancesInService: 2
-        MaxBatchSize: 1
-        PauseTime: PT15M
-        SuspendProcesses:
-          - HealthCheck
-          - ReplaceUnhealthy
-          - AZRebalance
-          - AlarmNotification
-          - ScheduledActions
-        WaitOnResourceSignals: true
+#  ECSAutoScalingGroup:
+#    Type: AWS::AutoScaling::AutoScalingGroup
+#    Properties:
+#      VPCZoneIdentifier: !Ref Subnets
+#      LaunchConfigurationName: !Ref ECSLaunchConfiguration
+#      MinSize: !Ref ClusterSize
+#      MaxSize: !Ref ClusterSize
+#      DesiredCapacity: !Ref ClusterSize
+#      Tags:
+#        - Key: Name
+#          Value: !Sub ${AWS::StackName} ECS host
+#          PropagateAtLaunch: true
+#    CreationPolicy:
+#      ResourceSignal:
+#        Timeout: PT15M
+#    UpdatePolicy:
+#      AutoScalingRollingUpdate:
+#        MinInstancesInService: 2
+#        MaxBatchSize: 1
+#        PauseTime: PT15M
+#        SuspendProcesses:
+#          - HealthCheck
+#          - ReplaceUnhealthy
+#          - AZRebalance
+#          - AlarmNotification
+#          - ScheduledActions
+#        WaitOnResourceSignals: true
 
-  ECSLaunchConfiguration:
-    Type: AWS::AutoScaling::LaunchConfiguration
-    Properties:
-      ImageId: !Ref ECSAMI
-      InstanceType: !Ref InstanceType
-      KeyName: !Ref KeyPair
-      AssociatePublicIpAddress: True
+#  ECSLaunchConfiguration:
+#    Type: AWS::AutoScaling::LaunchConfiguration
+#    Properties:
+#      ImageId: !Ref ECSAMI
+#      InstanceType: !Ref InstanceType
+#      KeyName: !Ref KeyPair
+#      AssociatePublicIpAddress: True
       # Uncomment if you would like to use Spot instances (subject to unexpected termination)
       # SpotPrice: !Ref SpotPrice
-      SecurityGroups:
-        - !Ref SecurityGroup
-      IamInstanceProfile: !Ref ECSInstanceProfile
-      UserData:
-        "Fn::Base64": !Sub |
-          #!/bin/bash
-          yum install -y aws-cfn-bootstrap hibagent rsync awscli
-          yum update -y
-          service amazon-ssm-agent restart
+#      SecurityGroups:
+#        - !Ref SecurityGroup
+#      IamInstanceProfile: !Ref ECSInstanceProfile
+#      UserData:
+#        "Fn::Base64": !Sub |
+#          #!/bin/bash
+#          yum install -y aws-cfn-bootstrap hibagent rsync awscli
+#          yum update -y
+#          service amazon-ssm-agent restart
+#
+#          # determine if we have an NVMe SSD attached
+#          find /dev/nvme1
+#          if [ $? -eq 0 ]
+#          then
+#            mount_point=/var/lib/docker
+#
+#            # copy existing files from mount point
+#            service docker stop
+#            echo 'DOCKER_STORAGE_OPTIONS="--storage-driver overlay2"' > /etc/sysconfig/docker-storage
+#            mkdir -p /tmp$mount_point
+#            rsync -val $mount_point/ /tmp/$mount_point/
+#
+#            # make a new filesystem and mount it
+#            mkfs -t ext4 /dev/nvme1n1
+#            mkdir -p $mount_point
+#            mount -t ext4 -o noatime /dev/nvme1n1 $mount_point
 
-          # determine if we have an NVMe SSD attached
-          find /dev/nvme1
-          if [ $? -eq 0 ]
-          then
-            mount_point=/var/lib/docker
+#            # Copy files back to new mount point
+#            rsync -val /tmp/$mount_point/ $mount_point/
+#            rm -rf /tmp$mount_point
+#            service docker start
 
-            # copy existing files from mount point
-            service docker stop
-            echo 'DOCKER_STORAGE_OPTIONS="--storage-driver overlay2"' > /etc/sysconfig/docker-storage
-            mkdir -p /tmp$mount_point
-            rsync -val $mount_point/ /tmp/$mount_point/
+#            # Make raid appear on reboot
+#            echo >> /etc/fstab
+#            echo "/dev/nvme1n1 $mount_point ext4 noatime 0 0" | tee -a /etc/fstab
+#          fi
 
-            # make a new filesystem and mount it
-            mkfs -t ext4 /dev/nvme1n1
-            mkdir -p $mount_point
-            mount -t ext4 -o noatime /dev/nvme1n1 $mount_point
+#          # Set Linux traffic control to limit outbound bandwidth usage of peering
+#          #tc qdisc add dev eth0 root handle 1:0 htb default 1
+#          #tc class add dev eth0 parent 1:0 classid 1:10 htb rate ${Bandwidth}kbit ceil {BandwidthCeiling}kbit prio 0
+#          #tc filter add dev eth0 protocol ip parent 1:0 prio 1 u32 match ip dport 30303 0xffff flowid 1:10
 
-            # Copy files back to new mount point
-            rsync -val /tmp/$mount_point/ $mount_point/
-            rm -rf /tmp$mount_point
-            service docker start
+#          /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration
+#          /opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSAutoScalingGroup
+#          /usr/bin/enable-ec2-spot-hibernation
 
-            # Make raid appear on reboot
-            echo >> /etc/fstab
-            echo "/dev/nvme1n1 $mount_point ext4 noatime 0 0" | tee -a /etc/fstab
-          fi
+#          # Attach an EIP from the pool of available EIPs in scope "vpc"
+#          alloc=`aws ec2 describe-addresses --region ${AWS::Region} --output text | grep -v eni | head -1 | cut -f 2`
+#          instanceid=`curl --silent 169.254.169.254/latest/meta-data/instance-id`
+#          aws ec2 associate-address --region ${AWS::Region} --allocation-id $alloc --instance-id $instanceid
+#          echo "ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=5m" >> /etc/ecs/ecs.config
 
-          # Set Linux traffic control to limit outbound bandwidth usage of peering
-          #tc qdisc add dev eth0 root handle 1:0 htb default 1
-          #tc class add dev eth0 parent 1:0 classid 1:10 htb rate ${Bandwidth}kbit ceil {BandwidthCeiling}kbit prio 0
-          #tc filter add dev eth0 protocol ip parent 1:0 prio 1 u32 match ip dport 30303 0xffff flowid 1:10
+#          reboot
 
-          /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration
-          /opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSAutoScalingGroup
-          /usr/bin/enable-ec2-spot-hibernation
+#    Metadata:
+#      AWS::CloudFormation::Init:
+#        config:
+#          packages:
+#            yum:
+#              awslogs: []
 
-          # Attach an EIP from the pool of available EIPs in scope "vpc"
-          alloc=`aws ec2 describe-addresses --region ${AWS::Region} --output text | grep -v eni | head -1 | cut -f 2`
-          instanceid=`curl --silent 169.254.169.254/latest/meta-data/instance-id`
-          aws ec2 associate-address --region ${AWS::Region} --allocation-id $alloc --instance-id $instanceid
-          echo "ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=5m" >> /etc/ecs/ecs.config
+#          commands:
+#            01_add_instance_to_cluster:
+#              command: !Sub echo ECS_CLUSTER=${Cluster} >> /etc/ecs/ecs.config
+#          files:
+#            "/etc/cfn/cfn-hup.conf":
+#              mode: 000400
+#              owner: root
+#              group: root
+#              content: !Sub |
+#                [main]
+#                stack=${AWS::StackId}
+#                region=${AWS::Region}
 
-          reboot
+#            "/etc/cfn/hooks.d/cfn-auto-reloader.conf":
+#              content: !Sub |
+#                [cfn-auto-reloader-hook]
+#                triggers=post.update
+#                path=Resources.ECSLaunchConfiguration.Metadata.AWS::CloudFormation::Init
+#                action=/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration
 
-    Metadata:
-      AWS::CloudFormation::Init:
-        config:
-          packages:
-            yum:
-              awslogs: []
-
-          commands:
-            01_add_instance_to_cluster:
-              command: !Sub echo ECS_CLUSTER=${Cluster} >> /etc/ecs/ecs.config
-          files:
-            "/etc/cfn/cfn-hup.conf":
-              mode: 000400
-              owner: root
-              group: root
-              content: !Sub |
-                [main]
-                stack=${AWS::StackId}
-                region=${AWS::Region}
-
-            "/etc/cfn/hooks.d/cfn-auto-reloader.conf":
-              content: !Sub |
-                [cfn-auto-reloader-hook]
-                triggers=post.update
-                path=Resources.ECSLaunchConfiguration.Metadata.AWS::CloudFormation::Init
-                action=/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration
-
-          services:
-            sysvinit:
-              cfn-hup:
-                enabled: true
-                ensureRunning: true
-                files:
-                  - /etc/cfn/cfn-hup.conf
-                  - /etc/cfn/hooks.d/cfn-auto-reloader.conf
+#          services:
+#            sysvinit:
+#              cfn-hup:
+#                enabled: true
+#                ensureRunning: true
+#                files:
+#                  - /etc/cfn/cfn-hup.conf
+#                  - /etc/cfn/hooks.d/cfn-auto-reloader.conf
 
   NodeLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -444,6 +451,7 @@ Resources:
       VpcId: !Ref VPC
       Port: !Ref RpcPort
       Protocol: TCP
+      TargetType: ip
       TargetGroupAttributes:
         - Key: deregistration_delay.timeout_seconds
           Value: 120
@@ -465,6 +473,7 @@ Resources:
       VpcId: !Ref VPC
       Port: !Ref WsPort
       Protocol: TCP
+      TargetType: ip
       TargetGroupAttributes:
         - Key: deregistration_delay.timeout_seconds
           Value: 120
@@ -486,119 +495,119 @@ Resources:
   # You can add other IAM policy statements here to allow access from your ECS hosts
   # to other AWS services.
 
-  ECSRole:
-    Type: AWS::IAM::Role
-    Properties:
-      Path: /
-      RoleName: !Sub ${AWS::StackName}-ECSRole-${AWS::Region}
-      AssumeRolePolicyDocument: |
-        {
-          "Statement": [{
-            "Action": "sts:AssumeRole",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": "ec2.amazonaws.com"
-            }
-          }]
-        }
-      Policies:
-        - PolicyName: ecs-service
-          PolicyDocument: |
-            {
-              "Statement": [{
-                "Effect": "Allow",
-                "Action": [
-                  "ecs:CreateCluster",
-                  "ecs:DeregisterContainerInstance",
-                  "ecs:DiscoverPollEndpoint",
-                  "ecs:Poll",
-                  "ecs:RegisterContainerInstance",
-                  "ecs:StartTelemetrySession",
-                  "ecs:Submit*",
-                  "logs:CreateLogStream",
-                  "logs:PutLogEvents",
-                  "ecr:BatchCheckLayerAvailability",
-                  "ecr:BatchGetImage",
-                  "ecr:GetDownloadUrlForLayer",
-                  "ecr:GetAuthorizationToken",
-                  "ssm:DescribeAssociation",
-                  "ssm:GetDeployablePatchSnapshotForInstance",
-                  "ssm:GetDocument",
-                  "ssm:GetManifest",
-                  "ssm:GetParameters",
-                  "ssm:ListAssociations",
-                  "ssm:ListInstanceAssociations",
-                  "ssm:PutInventory",
-                  "ssm:PutComplianceItems",
-                  "ssm:PutConfigurePackageResult",
-                  "ssm:PutParameter",
-                  "ssm:UpdateAssociationStatus",
-                  "ssm:UpdateInstanceAssociationStatus",
-                  "ssm:UpdateInstanceInformation",
-                  "ec2messages:AcknowledgeMessage",
-                  "ec2messages:DeleteMessage",
-                  "ec2messages:FailMessage",
-                  "ec2messages:GetEndpoint",
-                  "ec2messages:GetMessages",
-                  "ec2messages:SendReply",
-                  "cloudwatch:PutMetricData",
-                  "ec2:DescribeInstanceStatus",
-                  "ds:CreateComputer",
-                  "ds:DescribeDirectories",
-                  "logs:CreateLogGroup",
-                  "logs:CreateLogStream",
-                  "logs:DescribeLogGroups",
-                  "logs:DescribeLogStreams",
-                  "logs:PutLogEvents",
-                  "s3:PutObject",
-                  "s3:GetObject",
-                  "s3:DeleteObject",
-                  "s3:AbortMultipartUpload",
-                  "s3:ListMultipartUploadParts",
-                  "s3:ListBucket",
-                  "s3:ListBucketMultipartUploads",
-                  "firehose:PutRecord",
-                  "firehose:PutRecordBatch",
-                  "ec2:DescribeAddresses",
-                  "ec2:DescribeInstances",
-                  "ec2:AssociateAddress"
-                ],
-                "Resource": "*"
-              }]
-            }
+#  ECSRole:
+#    Type: AWS::IAM::Role
+#    Properties:
+#      Path: /
+#      RoleName: !Sub ${AWS::StackName}-ECSRole-${AWS::Region}
+#      AssumeRolePolicyDocument: |
+#        {
+#          "Statement": [{
+#            "Action": "sts:AssumeRole",
+#            "Effect": "Allow",
+#            "Principal": {
+#              "Service": "ec2.amazonaws.com"
+#            }
+#          }]
+#        }
+#      Policies:
+#        - PolicyName: ecs-service
+#          PolicyDocument: |
+#            {
+#              "Statement": [{
+#                "Effect": "Allow",
+#                "Action": [
+#                  "ecs:CreateCluster",
+#                  "ecs:DeregisterContainerInstance",
+#                  "ecs:DiscoverPollEndpoint",
+#                  "ecs:Poll",
+#                  "ecs:RegisterContainerInstance",
+#                  "ecs:StartTelemetrySession",
+#                  "ecs:Submit*",
+#                  "logs:CreateLogStream",
+#                  "logs:PutLogEvents",
+#                  "ecr:BatchCheckLayerAvailability",
+#                  "ecr:BatchGetImage",
+#                  "ecr:GetDownloadUrlForLayer",
+#                  "ecr:GetAuthorizationToken",
+#                  "ssm:DescribeAssociation",
+#                  "ssm:GetDeployablePatchSnapshotForInstance",
+#                  "ssm:GetDocument",
+#                  "ssm:GetManifest",
+#                  "ssm:GetParameters",
+#                  "ssm:ListAssociations",
+#                  "ssm:ListInstanceAssociations",
+#                  "ssm:PutInventory",
+#                  "ssm:PutComplianceItems",
+#                  "ssm:PutConfigurePackageResult",
+#                  "ssm:PutParameter",
+#                  "ssm:UpdateAssociationStatus",
+#                  "ssm:UpdateInstanceAssociationStatus",
+#                  "ssm:UpdateInstanceInformation",
+#                  "ec2messages:AcknowledgeMessage",
+#                  "ec2messages:DeleteMessage",
+#                  "ec2messages:FailMessage",
+#                  "ec2messages:GetEndpoint",
+#                  "ec2messages:GetMessages",
+#                  "ec2messages:SendReply",
+#                  "cloudwatch:PutMetricData",
+#                  "ec2:DescribeInstanceStatus",
+#                  "ds:CreateComputer",
+#                  "ds:DescribeDirectories",
+#                  "logs:CreateLogGroup",
+#                  "logs:CreateLogStream",
+#                  "logs:DescribeLogGroups",
+#                  "logs:DescribeLogStreams",
+#                  "logs:PutLogEvents",
+#                  "s3:PutObject",
+#                  "s3:GetObject",
+#                  "s3:DeleteObject",
+#                  "s3:AbortMultipartUpload",
+#                  "s3:ListMultipartUploadParts",
+#                  "s3:ListBucket",
+#                  "s3:ListBucketMultipartUploads",
+#                  "firehose:PutRecord",
+#                  "firehose:PutRecordBatch",
+#                  "ec2:DescribeAddresses",
+#                  "ec2:DescribeInstances",
+#                  "ec2:AssociateAddress"
+#                ],
+#                "Resource": "*"
+#              }]
+#            }
 
-  ECSInstanceProfile:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      Path: /
-      Roles:
-        - !Ref ECSRole
+#  ECSInstanceProfile:
+#    Type: AWS::IAM::InstanceProfile
+#    Properties:
+#      Path: /
+#      Roles:
+#        - !Ref ECSRole
 
-  ECSServiceAutoScalingRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          Action:
-            - "sts:AssumeRole"
-          Effect: Allow
-          Principal:
-            Service:
-              - application-autoscaling.amazonaws.com
-      Path: /
-      Policies:
-        - PolicyName: ecs-service-autoscaling
-          PolicyDocument:
-            Statement:
-              Effect: Allow
-              Action:
-                - application-autoscaling:*
-                - cloudwatch:DescribeAlarms
-                - cloudwatch:PutMetricAlarm
-                - ecs:DescribeServices
-                - ecs:UpdateService
-              Resource: "*"
+#  ECSServiceAutoScalingRole:
+#    Type: AWS::IAM::Role
+#    Properties:
+#      AssumeRolePolicyDocument:
+#        Version: "2012-10-17"
+#        Statement:
+#          Action:
+#            - "sts:AssumeRole"
+#          Effect: Allow
+#          Principal:
+#            Service:
+#              - application-autoscaling.amazonaws.com
+#      Path: /
+#      Policies:
+#        - PolicyName: ecs-service-autoscaling
+#          PolicyDocument:
+#            Statement:
+#              Effect: Allow
+#              Action:
+#                - application-autoscaling:*
+#                - cloudwatch:DescribeAlarms
+#                - cloudwatch:PutMetricAlarm
+#                - ecs:DescribeServices
+#                - ecs:UpdateService
+#              Resource: "*"
 
   NodeTaskExecutionRole:
     Type: AWS::IAM::Role
@@ -645,10 +654,16 @@ Resources:
       DesiredCount: !Ref NodeDesiredCount
       HealthCheckGracePeriodSeconds: 3600
       TaskDefinition: !Ref NodeTaskDefinition
-      LaunchType: EC2
-      DeploymentConfiguration:
-        MaximumPercent: 150
-        MinimumHealthyPercent: 50
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !Ref SecurityGroup
+          Subnets: !Ref Subnets
+          AssignPublicIp: ENABLED
+      #DeploymentConfiguration:
+      #  MaximumPercent: 150
+      #  MinimumHealthyPercent: 50
       LoadBalancers:
         - ContainerName: !Ref NodeTaskName
           ContainerPort: !Ref RpcPort
@@ -659,22 +674,25 @@ Resources:
       ServiceName: !Sub ${ServiceName}-${Network}-${SyncMode}
       ServiceRegistries:
         - RegistryArn: !GetAtt DiscoveryService.Arn
-          ContainerName: !Ref NodeTaskName
-          ContainerPort: !Ref RpcPort
+          Port: !Ref RpcPort
+          #ContainerName: !Ref NodeTaskName
+          #ContainerPort: !Ref RpcPort
 
   NodeTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Ref NodeTaskName
-      RequiresCompatibilities:
-        - EC2
-      NetworkMode: host
+      #RequiresCompatibilities:
+      #  - EC2
+      NetworkMode: awsvpc
       ExecutionRoleArn: !Ref NodeTaskExecutionRole
+      Cpu: 2048
+      Memory: 8192
       ContainerDefinitions:
         - Name: !Ref NodeTaskName
           Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${NodeRepository}
           Essential: true
-          MemoryReservation: !Ref MemoryLimit
+          #MemoryReservation: !Ref MemoryLimit
           Environment:
             - Name: "region"
               Value: !Ref AWS::Region
@@ -716,11 +734,11 @@ Resources:
           #  Retries: 10
           #  StartPeriod: 300
 
-  PrivateNamespace:
-    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
-    Properties:
-        Name: !Ref PrivateZoneName
-        Vpc: !Ref VPC
+#  PrivateNamespace:
+#    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+#    Properties:
+#        Name: !Ref PrivateZoneName
+#        Vpc: !Ref VPC
 
   DiscoveryService:
     Type: AWS::ServiceDiscovery::Service
@@ -730,11 +748,13 @@ Resources:
         RoutingPolicy: MULTIVALUE
         DnsRecords:
           - TTL: 60
+            Type: A
+          - TTL: 60
             Type: SRV
       HealthCheckCustomConfig: 
         FailureThreshold: 1
       Name: !Sub ${ServiceName}-${Network}-${SyncMode}
-      NamespaceId: !Ref PrivateNamespace
+      NamespaceId: !Ref NameSpaceId
 
   # CodePipeline Resources
 
@@ -935,67 +955,67 @@ Resources:
 
   # CloudWatch Resources
 
-  CPUAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      AlarmName: !Sub ${AWS::StackName} average CPU utilization greater than threshold.
-      AlarmDescription: Alarm if CPU utilization is greater than threshold.
-      Namespace: AWS/ECS
-      MetricName: CPUUtilization
-      Dimensions:
-        - Name: ClusterName
-          Value: !Ref Cluster
-      Statistic: Average
-      Period: "60"
-      EvaluationPeriods: "3"
-      Threshold: !Ref CPUAlarmThreshold
-      ComparisonOperator: GreaterThanThreshold
-      AlarmActions:
-        - Ref: SNSTopic
-      OKActions:
-        - Ref: SNSTopic
+#  CPUAlarm:
+#    Type: AWS::CloudWatch::Alarm
+#    Properties:
+#      AlarmName: !Sub ${AWS::StackName} average CPU utilization greater than threshold.
+#      AlarmDescription: Alarm if CPU utilization is greater than threshold.
+#      Namespace: AWS/ECS
+#      MetricName: CPUUtilization
+#      Dimensions:
+#        - Name: ClusterName
+#          Value: !Ref Cluster
+#      Statistic: Average
+#      Period: "60"
+#      EvaluationPeriods: "3"
+#      Threshold: !Ref CPUAlarmThreshold
+#      ComparisonOperator: GreaterThanThreshold
+#      AlarmActions:
+#        - Ref: SNSTopic
+#      OKActions:
+#        - Ref: SNSTopic
 
-  MemoryAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      AlarmName: !Sub ${AWS::StackName} average memory utilization greater than threshold.
-      AlarmDescription: Alarm if memory utilization is greater than threshold.
-      Namespace: AWS/ECS
-      MetricName: MemoryUtilization
-      Dimensions:
-        - Name: ClusterName
-          Value: !Ref Cluster
-      Statistic: Average
-      Period: "60"
-      EvaluationPeriods: "3"
-      Threshold: !Ref MemoryAlarmThreshold
-      ComparisonOperator: GreaterThanThreshold
-      AlarmActions:
-        - Ref: SNSTopic
-      OKActions:
-        - Ref: SNSTopic
+#  MemoryAlarm:
+#    Type: AWS::CloudWatch::Alarm
+#    Properties:
+#      AlarmName: !Sub ${AWS::StackName} average memory utilization greater than threshold.
+#      AlarmDescription: Alarm if memory utilization is greater than threshold.
+#      Namespace: AWS/ECS
+#      MetricName: MemoryUtilization
+#      Dimensions:
+#        - Name: ClusterName
+#          Value: !Ref Cluster
+#      Statistic: Average
+#      Period: "60"
+#      EvaluationPeriods: "3"
+#      Threshold: !Ref MemoryAlarmThreshold
+#      ComparisonOperator: GreaterThanThreshold
+#      AlarmActions:
+#        - Ref: SNSTopic
+#      OKActions:
+#        - Ref: SNSTopic
 
-  HealthyHostAlarm:
-    Type: "AWS::CloudWatch::Alarm"
-    Properties:
-      AlarmName: !Sub ${AWS::StackName} alarm no healthy hosts connected to ELB.
-      AlarmDescription: Alarm if no healthy hosts connected to ELB.
-      MetricName: HealthyHostCount
-      Namespace: AWS/NetworkELB
-      Statistic: Average
-      Period: "60"
-      EvaluationPeriods: "3"
-      Threshold: "1"
-      ComparisonOperator: LessThanThreshold
-      Dimensions:
-        - Name: TargetGroup
-          Value: !GetAtt NodeTargetGroup.TargetGroupFullName
-        - Name: LoadBalancer
-          Value: !GetAtt NodeLoadBalancer.LoadBalancerFullName
-      AlarmActions:
-        - Ref: SNSTopic
-      OKActions:
-        - Ref: SNSTopic
+#  HealthyHostAlarm:
+#    Type: "AWS::CloudWatch::Alarm"
+#    Properties:
+#      AlarmName: !Sub ${AWS::StackName} alarm no healthy hosts connected to ELB.
+#      AlarmDescription: Alarm if no healthy hosts connected to ELB.
+#      MetricName: HealthyHostCount
+#      Namespace: AWS/NetworkELB
+#      Statistic: Average
+#      Period: "60"
+#      EvaluationPeriods: "3"
+#      Threshold: "1"
+#      ComparisonOperator: LessThanThreshold
+#      Dimensions:
+#        - Name: TargetGroup
+#          Value: !GetAtt NodeTargetGroup.TargetGroupFullName
+#        - Name: LoadBalancer
+#          Value: !GetAtt NodeLoadBalancer.LoadBalancerFullName
+#      AlarmActions:
+#        - Ref: SNSTopic
+#      OKActions:
+#        - Ref: SNSTopic
 
 Outputs:
   ClusterName:
