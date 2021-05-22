@@ -252,6 +252,8 @@ Mappings:
     us-east-2:
       mainnet: mev-geth-updater-fast-chainbucket-17p2xhnhcydlz
       goerli: mev-geth-updater-fast-goerli-chainbucket-j6dujg8apbna
+    eu-west-1:
+      mainnet: mev-geth-updater-fast-chainbucket-17p2xhnhcydlz
     #us-west-2:
     #  mainnet:
     #  goerli:
